@@ -1,0 +1,24 @@
+{
+  "short_name": "FeelingApp",
+  "name": "FEELING APP - Prototipo Oficial",
+  "description": "Aplicación comunitaria y agenda de eventos FEELING APP",
+  "icons": [
+    {
+      "src": "FOTOGRAFIAS/INTRO.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "FOTOGRAFIAS/INTRO.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./Proto/index.html",
+  "background_color": "#FFB03A",
+  "theme_color": "#FFB03A",
+  "display": "standalone",
+  "orientation": "portrait"
+}

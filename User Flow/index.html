@@ -1,0 +1,2917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FEELING APP - Interactive UX User Flow Editor</title>
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: #131b2e;
+      --bg-card-hover: #1c2742;
+      --border-color: #233152;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      
+      --cat-auth: #10b981;
+      --cat-hub: #059669;
+      --cat-dir: #f97316;
+      --cat-filter: #06b6d4;
+      --cat-list: #ec4899;
+      --cat-media: #eab308;
+      --cat-events: #3b82f6;
+      --cat-profile: #8b5cf6;
+      --cat-verif: #6366f1;
+      --cat-improved: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Top Control Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #a855f7, #3b82f6, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-badge {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #d8b4fe;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 600;
+      -webkit-text-fill-color: #d8b4fe;
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border: none;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #6d28d9, #4338ca);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #10b981);
+      border: none;
+      color: #fff;
+    }
+
+    .search-box {
+      position: relative;
+      width: 220px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 12px 8px 34px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 16px;
+      height: 16px;
+    }
+
+    .filter-select {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Main Viewport & Canvas */
+    #viewport {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: grab;
+      background-image: 
+        radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+      background-size: 28px 28px;
+    }
+
+    #viewport:active {
+      cursor: grabbing;
+    }
+
+    #canvas-container {
+      position: absolute;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    svg#connections-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5500px;
+      height: 5500px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Flow Nodes */
+    .flow-node {
+      position: absolute;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 16px;
+      min-width: 180px;
+      max-width: 320px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      z-index: 2;
+      cursor: pointer;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      will-change: left, top;
+    }
+
+    .flow-node:hover {
+      border-color: #38bdf8;
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
+    }
+
+    .flow-node.selected {
+      border-color: #a855f7 !important;
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.4), 0 12px 30px rgba(168, 85, 247, 0.3) !important;
+    }
+
+    .node-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .node-title {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.2px;
+      line-height: 1.3;
+    }
+
+    .node-tag {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .node-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .node-list-container {
+      margin-top: 8px;
+      max-height: 140px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 6px;
+      padding: 6px;
+      font-size: 11px;
+    }
+
+    .node-list-item {
+      padding: 3px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .node-list-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Category Specific Colors */
+    .flow-node[data-cat="auth"] { border-top: 4px solid var(--cat-auth); }
+    .flow-node[data-cat="hub"] { border-top: 4px solid var(--cat-hub); }
+    .flow-node[data-cat="dir"] { border-top: 4px solid var(--cat-dir); }
+    .flow-node[data-cat="directory"] { border-top: 4px solid var(--cat-dir); }
+    .flow-node[data-cat="media"] { border-top: 4px solid var(--cat-media); }
+    .flow-node[data-cat="events"] { border-top: 4px solid var(--cat-events); }
+    .flow-node[data-cat="profile"] { border-top: 4px solid var(--cat-profile); }
+    .flow-node[data-cat="verification"] { border-top: 4px solid var(--cat-verif); }
+    
+    .flow-node[data-status="improved"] {
+      border-top: 4px solid var(--cat-improved) !important;
+      border-style: dashed;
+      background: linear-gradient(180deg, rgba(168, 85, 247, 0.12), var(--bg-card));
+    }
+
+    .flow-node#node-el-node_navbar {
+      border: 2px solid #10b981 !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(19, 27, 46, 0.95)) !important;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.3) !important;
+    }
+
+    .flow-node#node-el-node_shell_header {
+      border: 2px solid #3b82f6 !important;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(19, 27, 46, 0.95)) !important;
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* Floating Legend */
+    .floating-legend {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 16px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 520px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #cbd5e1;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Zoom Controls Floating */
+    .floating-tools {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 6px;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tool-btn {
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Drawer */
+    .drawer {
+      position: fixed;
+      top: 64px;
+      right: -420px;
+      width: 400px;
+      height: calc(100vh - 64px);
+      background: var(--bg-card);
+      border-left: 1px solid var(--border-color);
+      z-index: 95;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      border-color: #3b82f6;
+    }
+
+    textarea.form-control {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 650px;
+      padding: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    pre.code-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #a7f3d0;
+      max-height: 350px;
+      overflow: auto;
+      user-select: text;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand-title">
+      <i data-lucide="git-fork"></i>
+      FEELING APP <span class="brand-badge">UX Flow Editor v9.0</span>
+    </div>
+
+    <div class="controls-group">
+      <div class="search-box">
+        <i data-lucide="search"></i>
+        <input type="text" id="search-input" placeholder="Buscar nodo..." onkeyup="filterNodesBySearch()">
+      </div>
+
+      <select class="filter-select" id="view-filter" onchange="applyViewFilter()">
+        <option value="all">🌟 Todos los Nodos (Original + Mejoras)</option>
+        <option value="original">📌 Solo Diagrama Original (FEELING APP.jpg)</option>
+        <option value="improved">💡 Solo Mejoras Propuestas UX</option>
+        <option value="auth">🔐 Flujo Autenticación</option>
+        <option value="directory">🏢 Directorios (Lugares/Empresas)</option>
+        <option value="media">🎵 Biblioteca & Multimedia</option>
+        <option value="verification">🆔 Verificación & KYC</option>
+      </select>
+
+      <button class="btn btn-primary" onclick="openAddNodeModal()">
+        <i data-lucide="plus"></i> Nuevo Nodo
+      </button>
+
+      <button class="btn" onclick="openMermaidModal()">
+        <i data-lucide="code"></i> Exportar Mermaid
+      </button>
+
+      <button class="btn btn-success" onclick="exportJSON()">
+        <i data-lucide="download"></i> Guardar JSON
+      </button>
+    </div>
+  </header>
+
+  <!-- Viewport -->
+  <div id="viewport" onmousedown="startPan(event)" onwheel="handleZoom(event)">
+    <div id="canvas-container">
+      <svg id="connections-layer">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+          </marker>
+          <marker id="arrow-improved" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#a855f7"/>
+          </marker>
+          <marker id="arrow-navbar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+          </marker>
+          <marker id="arrow-shell" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+          </marker>
+        </defs>
+        <g id="paths-group"></g>
+      </svg>
+      <div id="nodes-container"></div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="floating-legend">
+    <div class="legend-title">Categorías del User Flow</div>
+    <div class="legend-items">
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-auth)"></div> Autenticación</div>
+      <div class="legend-item"><div class="legend-color" style="background: #3b82f6"></div> ↗️ Shell Header (Omnibox + 🔔 Campanita)</div>
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-hub)"></div> 📱 NavBar Inferior (5 Botones)</div>
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-dir)"></div> Directorios & Media Pool</div>
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-media)"></div> Biblioteca / Streaming</div>
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-events)"></div> Agenda (Próximo & Calendario)</div>
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-profile)"></div> Perfil & Ajustes</div>
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-verif)"></div> Verificación Ley/KYC</div>
+      <div class="legend-item"><div class="legend-color" style="background: var(--cat-improved)"></div> 💡 Mejoras Propuestas</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="floating-tools">
+    <button class="tool-btn" onclick="zoomIn()" title="Acercar"><i data-lucide="zoom-in"></i></button>
+    <button class="tool-btn" onclick="zoomOut()" title="Alejar"><i data-lucide="zoom-out"></i></button>
+    <button class="tool-btn" onclick="resetZoom()" title="Reiniciar Vista"><i data-lucide="maximize-2"></i></button>
+  </div>
+
+  <!-- Drawer -->
+  <div class="drawer" id="inspector-drawer">
+    <div class="drawer-header">
+      <h3 style="font-size: 16px; font-weight:700;">Editar Nodo</h3>
+      <button class="btn" onclick="closeDrawer()" style="padding: 4px 8px;"><i data-lucide="x"></i></button>
+    </div>
+
+    <form id="node-edit-form" onsubmit="saveNodeEdits(event)">
+      <input type="hidden" id="edit-node-id">
+
+      <div class="form-group">
+        <label>Título del Nodo</label>
+        <input type="text" id="edit-node-label" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label>Categoría</label>
+        <select id="edit-node-category" class="form-control">
+          <option value="auth">Autenticación</option>
+          <option value="hub">Hub / NavBar Inferior</option>
+          <option value="directory">Directorios</option>
+          <option value="media">Biblioteca / Media</option>
+          <option value="events">Agenda / Notificaciones</option>
+          <option value="profile">Perfil & Ajustes</option>
+          <option value="verification">Verificación Legal / KYC</option>
+          <option value="improved">Mejora UX</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de Componente</label>
+        <select id="edit-node-type" class="form-control">
+          <option value="screen">Pantalla (Screen)</option>
+          <option value="action">Acción / Botón</option>
+          <option value="form">Formulario / Input</option>
+          <option value="decision">Decisión / Condición</option>
+          <option value="system">Sistema / Servidor</option>
+          <option value="media">Elemento Media</option>
+          <option value="list">Lista de Ítems</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Estado en Flow</label>
+        <select id="edit-node-status" class="form-control">
+          <option value="original">📌 Original (FEELING APP.jpg)</option>
+          <option value="improved">💡 Mejora UX Propuesta</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Descripción / Notas UX</label>
+        <textarea id="edit-node-desc" class="form-control" placeholder="Detalles de la pantalla o fundamentación de la mejora..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Ítems de Lista (uno por línea)</label>
+        <textarea id="edit-node-items" class="form-control" placeholder="Workcapital&#10;Kailash&#10;Nuroyzen..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 24px;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;"><i data-lucide="check"></i> Guardar Cambios</button>
+        <button type="button" class="btn" style="color: #ef4444; border-color: rgba(239,68,68,0.3);" onclick="deleteCurrentNode()"><i data-lucide="trash-2"></i></button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Mermaid Modal -->
+  <div class="modal-overlay" id="mermaid-modal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>Código Mermaid Diagram</span>
+        <button class="btn" onclick="closeModal('mermaid-modal')" style="padding: 4px 8px;"><i data-lucide="x"></i></button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Copia este código para importarlo en Draw.io, Eraser.io, Figma Mermaid plugin o GitHub Docs.</p>
+      <pre class="code-block" id="mermaid-code-output"></pre>
+      <div style="margin-top: 16px; text-align: right;">
+        <button class="btn btn-primary" onclick="copyMermaidCode()"><i data-lucide="copy"></i> Copiar al Portapapeles</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA WITH COMBINED LUGARES E INSTITUCIONES DIRECTORY CARD -->
+  <script>
+    const INITIAL_FLOW_DATA = {
+  "version": "2.0.0",
+  "appName": "Feeling App - UX User Flow",
+  "lastUpdated": "2026-08-06",
+  "nodes": [
+    {
+      "id": "node_inicio",
+      "label": "INICIO",
+      "category": "auth",
+      "type": "start",
+      "status": "original",
+      "x": 60,
+      "y": 420,
+      "description": "Pantalla de bienvenida inicial de la app Feeling",
+      "screenCode": "SCR-101"
+    },
+    {
+      "id": "node_login",
+      "label": "LOG IN",
+      "category": "auth",
+      "type": "action",
+      "status": "original",
+      "x": 260,
+      "y": 280,
+      "screenCode": "SCR-102"
+    },
+    {
+      "id": "node_signin",
+      "label": "SIGN IN",
+      "category": "auth",
+      "type": "action",
+      "status": "original",
+      "x": 260,
+      "y": 420,
+      "screenCode": "SCR-103"
+    },
+    {
+      "id": "node_google",
+      "label": "GOOGLE",
+      "category": "auth",
+      "type": "action",
+      "status": "original",
+      "x": 260,
+      "y": 560,
+      "screenCode": "SCR-104"
+    },
+    {
+      "id": "node_login_user",
+      "label": "USUARIO",
+      "category": "auth",
+      "type": "form",
+      "status": "original",
+      "x": 450,
+      "y": 220
+    },
+    {
+      "id": "node_login_pass",
+      "label": "CONTRASEÑA",
+      "category": "auth",
+      "type": "form",
+      "status": "original",
+      "x": 450,
+      "y": 280
+    },
+    {
+      "id": "node_valido",
+      "label": "VÁLIDO",
+      "category": "auth",
+      "type": "decision",
+      "status": "original",
+      "x": 650,
+      "y": 230
+    },
+    {
+      "id": "node_invalido",
+      "label": "INVÁLIDO",
+      "category": "auth",
+      "type": "decision",
+      "status": "original",
+      "x": 650,
+      "y": 310
+    },
+    {
+      "id": "node_cred_invalida",
+      "label": "CREDENCIAL INVÁLIDA",
+      "category": "auth",
+      "type": "system",
+      "status": "original",
+      "x": 840,
+      "y": 290
+    },
+    {
+      "id": "node_cred_no_reg",
+      "label": "CREDENCIAL NO REGISTRADA",
+      "category": "auth",
+      "type": "system",
+      "status": "original",
+      "x": 840,
+      "y": 340
+    },
+    {
+      "id": "node_forgot_pass",
+      "label": "¿OLVIDASTE TU CONTRASEÑA? (Mejora UX)",
+      "category": "auth",
+      "type": "action",
+      "status": "improved",
+      "x": 650,
+      "y": 380,
+      "description": "Flujo de recuperación de clave vía Email/OTP no existente en el gráfico original",
+      "screenCode": "SCR-105"
+    },
+    {
+      "id": "node_signin_nombre",
+      "label": "NOMBRE Y APELLIDO",
+      "category": "auth",
+      "type": "form",
+      "status": "original",
+      "x": 450,
+      "y": 420
+    },
+    {
+      "id": "node_signin_nac",
+      "label": "FECHA NACIMIENTO",
+      "category": "auth",
+      "type": "form",
+      "status": "original",
+      "x": 450,
+      "y": 470
+    },
+    {
+      "id": "node_signin_ciudad",
+      "label": "CIUDAD / PAÍS",
+      "category": "auth",
+      "type": "form",
+      "status": "original",
+      "x": 450,
+      "y": 520
+    },
+    {
+      "id": "node_signin_mail",
+      "label": "MAIL",
+      "category": "auth",
+      "type": "form",
+      "status": "original",
+      "x": 450,
+      "y": 570
+    },
+    {
+      "id": "node_signin_pass",
+      "label": "CONTRASEÑA",
+      "category": "auth",
+      "type": "form",
+      "status": "original",
+      "x": 450,
+      "y": 620
+    },
+    {
+      "id": "node_signin_terms",
+      "label": "TÉRMINOS Y CONDICIONES / POLÍTICAS DE PRIVACIDAD",
+      "category": "auth",
+      "type": "decision",
+      "status": "original",
+      "x": 650,
+      "y": 520
+    },
+    {
+      "id": "node_datos_validos",
+      "label": "DATOS VÁLIDOS",
+      "category": "auth",
+      "type": "decision",
+      "status": "original",
+      "x": 650,
+      "y": 640
+    },
+    {
+      "id": "node_index",
+      "label": "INDEX",
+      "category": "hub",
+      "type": "screen",
+      "status": "original",
+      "x": 1150,
+      "y": 420,
+      "description": "Pantalla principal / Dashboard de Feeling App",
+      "screenCode": "SCR-201"
+    },
+    {
+      "id": "node_navbar",
+      "label": "NAVBAR",
+      "category": "hub",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 140
+    },
+    {
+      "id": "node_global_search",
+      "label": "BÚSQUEDA GLOBAL / BARRA NAV (Mejora UX)",
+      "category": "hub",
+      "type": "action",
+      "status": "improved",
+      "x": 1600,
+      "y": 140,
+      "description": "Búsqueda unificada en la barra superior para acceder a Lugares, Empresas, Contenido y Eventos"
+    },
+    {
+      "id": "node_intro",
+      "label": "INTRO",
+      "category": "content",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 230,
+      "screenCode": "SCR-202"
+    },
+    {
+      "id": "node_testimonios",
+      "label": "TESTIMONIOS",
+      "category": "content",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 300,
+      "screenCode": "SCR-203"
+    },
+    {
+      "id": "node_lugares",
+      "label": "LUGARES",
+      "category": "directory",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 390,
+      "screenCode": "SCR-204"
+    },
+    {
+      "id": "node_lugares_filtro",
+      "label": "FILTRO/SELECTOR DESPLEGABLE",
+      "category": "directory",
+      "type": "action",
+      "status": "original",
+      "x": 1600,
+      "y": 370
+    },
+    {
+      "id": "node_lugares_busqueda",
+      "label": "BÚSQUEDA",
+      "category": "directory",
+      "type": "action",
+      "status": "original",
+      "x": 1600,
+      "y": 420
+    },
+    {
+      "id": "node_lugares_list",
+      "label": "LISTA DE LUGARES",
+      "category": "directory",
+      "type": "list",
+      "status": "original",
+      "x": 1820,
+      "y": 390,
+      "listItems": [
+        "TODOS POR DEFECTO",
+        "Ciudad de la Luz",
+        "Vrindavan",
+        "Meditazen",
+        "Barrios: Mukunda / Rincón del Sol",
+        "Mathura Deva / Residencia"
+      ]
+    },
+    {
+      "id": "node_empresas",
+      "label": "EMPRESAS",
+      "category": "directory",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 550,
+      "screenCode": "SCR-206"
+    },
+    {
+      "id": "node_empresas_filtro",
+      "label": "FILTRO/SELECTOR DESPLEGABLE",
+      "category": "directory",
+      "type": "action",
+      "status": "original",
+      "x": 1600,
+      "y": 520
+    },
+    {
+      "id": "node_empresas_busqueda",
+      "label": "BÚSQUEDA",
+      "category": "directory",
+      "type": "action",
+      "status": "original",
+      "x": 1600,
+      "y": 570
+    },
+    {
+      "id": "node_empresas_list",
+      "label": "LISTA DE EMPRESAS",
+      "category": "directory",
+      "type": "list",
+      "status": "original",
+      "x": 1820,
+      "y": 550,
+      "listItems": [
+        "TODOS POR DEFECTO",
+        "Workcapital",
+        "Nuroyzen",
+        "Kailash",
+        "Inmobiliaria Raíces Zen",
+        "Plena Motivación",
+        "Lagozon",
+        "Sanipani",
+        "Akasha",
+        "Gandharva Deva",
+        "Surya Das",
+        "Barbería Inll",
+        "Sundari",
+        "Prin Boutique Desire",
+        "Endorfina",
+        "El Portal de Lakshmi",
+        "RAK",
+        "Delicias Saludables",
+        "Madhuram",
+        "Bajrangi",
+        "Casa Veggi / Calu",
+        "Sana Semilla",
+        "Alisha Regalos",
+        "Calma",
+        "Tierra Ananda",
+        "Ser Gine",
+        "S.E.N.",
+        "Radhika Pritam",
+        "Anisha Joyas",
+        "Natura",
+        "Seytú",
+        "Espacio del Alma",
+        "Water panda",
+        "Moto repuestos Miraflores",
+        "Tartogno mos",
+        "Vishal Dietética"
+      ]
+    },
+    {
+      "id": "node_instituciones",
+      "label": "INSTITUCIONES",
+      "category": "directory",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 740,
+      "screenCode": "SCR-205"
+    },
+    {
+      "id": "node_inst_filtro",
+      "label": "FILTRO/SELECTOR DESPLEGABLE",
+      "category": "directory",
+      "type": "action",
+      "status": "original",
+      "x": 1600,
+      "y": 720
+    },
+    {
+      "id": "node_inst_busqueda",
+      "label": "BÚSQUEDA",
+      "category": "directory",
+      "type": "action",
+      "status": "original",
+      "x": 1600,
+      "y": 770
+    },
+    {
+      "id": "node_inst_list",
+      "label": "LISTA DE INSTITUCIONES",
+      "category": "directory",
+      "type": "list",
+      "status": "original",
+      "x": 1820,
+      "y": 740,
+      "listItems": [
+        "Dharma Prama",
+        "Fundación",
+        "Salud Mental"
+      ]
+    },
+    {
+      "id": "node_notificaciones",
+      "label": "NOTIFICACIONES",
+      "category": "events",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 50
+    },
+    {
+      "id": "node_notif_selector",
+      "label": "SELECTOR DESPLEGABLE",
+      "category": "events",
+      "type": "action",
+      "status": "original",
+      "x": 1600,
+      "y": 50
+    },
+    {
+      "id": "node_notif_proximo",
+      "label": "PRÓXIMO",
+      "category": "events",
+      "type": "action",
+      "status": "original",
+      "x": 1820,
+      "y": 50
+    },
+    {
+      "id": "node_notif_tarjeta",
+      "label": "TARJETA CONTENIDO",
+      "category": "events",
+      "type": "screen",
+      "status": "original",
+      "x": 2040,
+      "y": 30
+    },
+    {
+      "id": "node_notif_dia",
+      "label": "DÍA O PERÍODO MARCADO",
+      "category": "events",
+      "type": "screen",
+      "status": "original",
+      "x": 2040,
+      "y": 80
+    },
+    {
+      "id": "node_notif_registrar",
+      "label": "REGISTRARSE",
+      "category": "events",
+      "type": "action",
+      "status": "original",
+      "x": 2260,
+      "y": 30
+    },
+    {
+      "id": "node_notif_agendar",
+      "label": "AGENDAR",
+      "category": "events",
+      "type": "action",
+      "status": "original",
+      "x": 2260,
+      "y": 80
+    },
+    {
+      "id": "node_agenda",
+      "label": "AGENDA",
+      "category": "events",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 100,
+      "screenCode": "SCR-301"
+    },
+    {
+      "id": "node_agenda_cal",
+      "label": "CALENDARIO",
+      "category": "events",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 100
+    },
+    {
+      "id": "node_agenda_tarjeta",
+      "label": "TARJETA CALENDARIO",
+      "category": "events",
+      "type": "screen",
+      "status": "original",
+      "x": 2040,
+      "y": 130
+    },
+    {
+      "id": "node_agenda_year",
+      "label": "SELECTOR AÑO / MES",
+      "category": "events",
+      "type": "action",
+      "status": "original",
+      "x": 2260,
+      "y": 130
+    },
+    {
+      "id": "node_agenda_kw",
+      "label": "BÚSQUEDA POR PALABRA",
+      "category": "events",
+      "type": "action",
+      "status": "original",
+      "x": 2260,
+      "y": 180
+    },
+    {
+      "id": "node_agenda_ticket_imp",
+      "label": "CONFIRMACIÓN / GENERACIÓN DE TICKET RSVP (Mejora UX)",
+      "category": "events",
+      "type": "action",
+      "status": "improved",
+      "x": 2480,
+      "y": 80,
+      "description": "Emisión de comprobante QR y sincro con Apple/Google Calendar al agendar evento"
+    },
+    {
+      "id": "node_novedades",
+      "label": "NOVEDADES",
+      "category": "content",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 180,
+      "screenCode": "SCR-401"
+    },
+    {
+      "id": "node_biblioteca",
+      "label": "BIBLIOTECA",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 860,
+      "screenCode": "SCR-501"
+    },
+    {
+      "id": "node_bib_stream",
+      "label": "MEDIA / STREAM",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 1600,
+      "y": 860
+    },
+    {
+      "id": "node_bib_musica",
+      "label": "MÚSICA",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 830
+    },
+    {
+      "id": "node_bib_doc",
+      "label": "DOCUMENTALES",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 880
+    },
+    {
+      "id": "node_bib_podcast",
+      "label": "PODCAST",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 930
+    },
+    {
+      "id": "node_bib_gacetas",
+      "label": "GACETILLAS / ORACIONES / CANCIONERO",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 980
+    },
+    {
+      "id": "node_carrusel",
+      "label": "CARRUSEL",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 2040,
+      "y": 900
+    },
+    {
+      "id": "node_reproductor",
+      "label": "REPRODUCTOR",
+      "category": "media",
+      "type": "screen",
+      "status": "original",
+      "x": 2260,
+      "y": 900
+    },
+    {
+      "id": "node_media_pill",
+      "label": "MEDIA",
+      "category": "media",
+      "type": "media",
+      "status": "original",
+      "x": 2480,
+      "y": 900,
+      "screenCode": "SCR-207"
+    },
+    {
+      "id": "node_player_controls_imp",
+      "label": "CONTROLES MULTIMEDIA AVANZADOS + MODO OFFLINE (Mejora UX)",
+      "category": "media",
+      "type": "action",
+      "status": "improved",
+      "x": 2700,
+      "y": 900,
+      "description": "Lista de reproducción, velocidad de audio, descargas y favoritos en reproductor"
+    },
+    {
+      "id": "node_menu",
+      "label": "MENÚ",
+      "category": "hub",
+      "type": "screen",
+      "status": "original",
+      "x": 1380,
+      "y": 660,
+      "screenCode": "SCR-601"
+    },
+    {
+      "id": "node_faqs",
+      "label": "FAQS",
+      "category": "content",
+      "type": "screen",
+      "status": "original",
+      "x": 1600,
+      "y": 1050,
+      "screenCode": "SCR-602"
+    },
+    {
+      "id": "node_contacto",
+      "label": "CONTACTO",
+      "category": "content",
+      "type": "screen",
+      "status": "original",
+      "x": 1600,
+      "y": 1120,
+      "screenCode": "SCR-603"
+    },
+    {
+      "id": "node_inspirador",
+      "label": "NUESTRO INSPIRADOR",
+      "category": "content",
+      "type": "screen",
+      "status": "original",
+      "x": 1600,
+      "y": 1190,
+      "screenCode": "SCR-604"
+    },
+    {
+      "id": "node_perfil_config",
+      "label": "PERFIL Y CONFIG",
+      "category": "profile",
+      "type": "screen",
+      "status": "original",
+      "x": 1600,
+      "y": 1280
+    },
+    {
+      "id": "node_prof_usuario",
+      "label": "USUARIO",
+      "category": "profile",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 1240
+    },
+    {
+      "id": "node_usr_nombre",
+      "label": "NOMBRE",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2040,
+      "y": 1180
+    },
+    {
+      "id": "node_usr_login_data",
+      "label": "DATOS DE INICIO DE SESIÓN",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2040,
+      "y": 1220
+    },
+    {
+      "id": "node_usr_nac",
+      "label": "FECHA DE NACIMIENTO",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2040,
+      "y": 1260
+    },
+    {
+      "id": "node_usr_ciudad",
+      "label": "CIUDAD/PAÍS",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2040,
+      "y": 1300
+    },
+    {
+      "id": "node_usr_edit",
+      "label": "EDITAR",
+      "category": "profile",
+      "type": "action",
+      "status": "original",
+      "x": 2260,
+      "y": 1240
+    },
+    {
+      "id": "node_usr_google_acc",
+      "label": "CUENTA DE GOOGLE",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2480,
+      "y": 1200
+    },
+    {
+      "id": "node_usr_mail_reg",
+      "label": "REGISTRO MAIL",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2480,
+      "y": 1240
+    },
+    {
+      "id": "node_usr_pass_act",
+      "label": "CONTRASEÑA ACTUAL",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1200
+    },
+    {
+      "id": "node_usr_pass_new",
+      "label": "NUEVA CONTRASEÑA",
+      "category": "profile",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1260
+    },
+    {
+      "id": "node_prof_config",
+      "label": "CONFIG APP",
+      "category": "profile",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 1340
+    },
+    {
+      "id": "node_cfg_theme",
+      "label": "MODO CLARO / OSCURO",
+      "category": "profile",
+      "type": "action",
+      "status": "original",
+      "x": 2040,
+      "y": 1340
+    },
+    {
+      "id": "node_cfg_notif",
+      "label": "ACTIVAR / DESACTIVAR NOTIFICACIONES",
+      "category": "profile",
+      "type": "action",
+      "status": "original",
+      "x": 2040,
+      "y": 1380
+    },
+    {
+      "id": "node_cfg_permissions",
+      "label": "PERMISOS DE LA APP",
+      "category": "profile",
+      "type": "action",
+      "status": "original",
+      "x": 2040,
+      "y": 1420
+    },
+    {
+      "id": "node_cfg_os_perm",
+      "label": "CONFIGURACIÓN DE PERMISOS DE ANDROID / iOS",
+      "category": "profile",
+      "type": "system",
+      "status": "original",
+      "x": 2260,
+      "y": 1420
+    },
+    {
+      "id": "node_prof_registro",
+      "label": "REGISTRO (VERIFICACIÓN LEY/SEGURIDAD)",
+      "category": "verification",
+      "type": "screen",
+      "status": "original",
+      "x": 1820,
+      "y": 1540
+    },
+    {
+      "id": "node_pol_sec",
+      "label": "DECLARACIÓN DE POLÍTICAS DE SEGURIDAD Y PRIVACIDAD DE LA APP",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 2040,
+      "y": 1480
+    },
+    {
+      "id": "node_terms_cond",
+      "label": "TÉRMINOS Y CONDICIONES",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 2040,
+      "y": 1540
+    },
+    {
+      "id": "node_terms_auto_verif",
+      "label": "VERIFICACIÓN DE TÉRMINOS Y CONDICIONES, DECLARACIÓN DE POLÍTICA DE SEGURIDAD Y PRIVACIDAD DE LA APP",
+      "category": "verification",
+      "type": "system",
+      "status": "original",
+      "x": 2040,
+      "y": 1600
+    },
+    {
+      "id": "node_normativas",
+      "label": "NORMATIVAS VIGENTES",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 2040,
+      "y": 1680
+    },
+    {
+      "id": "node_pol_acepto",
+      "label": "ACEPTO",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 2260,
+      "y": 1470
+    },
+    {
+      "id": "node_pol_declinar",
+      "label": "DECLINAR",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 2260,
+      "y": 1500
+    },
+    {
+      "id": "node_adv_pol",
+      "label": "ADVERTENCIA: Usted será borrado de nuestra base de datos, el ingreso a la aplicación Feeling no será viable",
+      "category": "verification",
+      "type": "system",
+      "status": "original",
+      "x": 2480,
+      "y": 1500
+    },
+    {
+      "id": "node_adv_norm",
+      "label": "ADVERTENCIA: Si usted no está de acuerdo con nuestras normativas vigentes no podrá realizar acto de presencia en nuestros predios o eventos",
+      "category": "verification",
+      "type": "system",
+      "status": "original",
+      "x": 2480,
+      "y": 1680
+    },
+    {
+      "id": "node_conf_pol",
+      "label": "CONFIRMADO",
+      "category": "verification",
+      "type": "system",
+      "status": "original",
+      "x": 2700,
+      "y": 1480
+    },
+    {
+      "id": "node_verif_auto_check",
+      "label": "VERIFICACIÓN AUTOMÁTICA",
+      "category": "verification",
+      "type": "system",
+      "status": "original",
+      "x": 2260,
+      "y": 1600
+    },
+    {
+      "id": "node_verif_aceptadas",
+      "label": "ACEPTADAS",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 2480,
+      "y": 1590
+    },
+    {
+      "id": "node_verif_no_leidas",
+      "label": "NO LEÍDAS",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 2480,
+      "y": 1620
+    },
+    {
+      "id": "node_kyc_nombre",
+      "label": "NOMBRE COMPLETO",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1720
+    },
+    {
+      "id": "node_kyc_dni",
+      "label": "DNI",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1770,
+      "screenCode": "SCR-606"
+    },
+    {
+      "id": "node_kyc_foto_frente",
+      "label": "FOTOGRAFÍA FRENTE",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 2920,
+      "y": 1750
+    },
+    {
+      "id": "node_kyc_foto_dorso",
+      "label": "FOTOGRAFÍA DORSO",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 2920,
+      "y": 1790
+    },
+    {
+      "id": "node_kyc_camara1",
+      "label": "CÁMARA",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 3140,
+      "y": 1740
+    },
+    {
+      "id": "node_kyc_cargar1",
+      "label": "CARGAR",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 3140,
+      "y": 1780
+    },
+    {
+      "id": "node_kyc_valido1",
+      "label": "VÁLIDO",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 3360,
+      "y": 1740
+    },
+    {
+      "id": "node_kyc_invalido1",
+      "label": "INVÁLIDO",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 3360,
+      "y": 1780
+    },
+    {
+      "id": "node_kyc_pais",
+      "label": "PAÍS DE RESIDENCIA",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1820
+    },
+    {
+      "id": "node_kyc_provincia",
+      "label": "PROVINCIA",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1870
+    },
+    {
+      "id": "node_kyc_ciudad",
+      "label": "CIUDAD",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1920
+    },
+    {
+      "id": "node_kyc_cp",
+      "label": "CÓDIGO POSTAL",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 1970
+    },
+    {
+      "id": "node_kyc_email",
+      "label": "EMAIL",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 2020
+    },
+    {
+      "id": "node_kyc_telefono",
+      "label": "TELÉFONO",
+      "category": "verification",
+      "type": "form",
+      "status": "original",
+      "x": 2700,
+      "y": 2070
+    },
+    {
+      "id": "node_kyc_foto_front",
+      "label": "FOTOGRAFÍA FRONTAL (ROSTRO)",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 2920,
+      "y": 2070
+    },
+    {
+      "id": "node_kyc_camara2",
+      "label": "CÁMARA",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 3140,
+      "y": 2050
+    },
+    {
+      "id": "node_kyc_cargar2",
+      "label": "CARGAR",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 3140,
+      "y": 2090
+    },
+    {
+      "id": "node_kyc_valido2",
+      "label": "VÁLIDO",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 3360,
+      "y": 2050
+    },
+    {
+      "id": "node_kyc_invalido2",
+      "label": "INVÁLIDO",
+      "category": "verification",
+      "type": "decision",
+      "status": "original",
+      "x": 3360,
+      "y": 2090
+    },
+    {
+      "id": "node_enviar_datos",
+      "label": "ENVIAR DATOS",
+      "category": "verification",
+      "type": "action",
+      "status": "original",
+      "x": 2700,
+      "y": 2150
+    },
+    {
+      "id": "node_servidor_admin",
+      "label": "SERVIDOR DEL ÁREA ADMINISTRADOR SE COMUNICARÁ PARA CORROBORAR LOS DATOS Y GESTIONAR PERMANENCIA Y/O ESTADÍA",
+      "category": "verification",
+      "type": "system",
+      "status": "original",
+      "x": 2920,
+      "y": 2150
+    },
+    {
+      "id": "node_kyc_status_hub_imp",
+      "label": "PANEL DE ESTADO VERIFICACIÓN Y PERMISOS DE ACCESO (Mejora UX)",
+      "category": "verification",
+      "type": "screen",
+      "status": "improved",
+      "x": 3200,
+      "y": 2150,
+      "description": "Monitoreo en tiempo real del estado de aprobación (Pendiente / Aprobado / Reintento) con notificación Push/Email al ser procesado por el Administrador"
+    }
+  ],
+  "connections": [
+    {
+      "from": "node_inicio",
+      "to": "node_login",
+      "label": ""
+    },
+    {
+      "from": "node_inicio",
+      "to": "node_signin",
+      "label": ""
+    },
+    {
+      "from": "node_inicio",
+      "to": "node_google",
+      "label": ""
+    },
+    {
+      "from": "node_login",
+      "to": "node_login_user",
+      "label": ""
+    },
+    {
+      "from": "node_login_user",
+      "to": "node_login_pass",
+      "label": ""
+    },
+    {
+      "from": "node_login_pass",
+      "to": "node_valido",
+      "label": "Correcto"
+    },
+    {
+      "from": "node_login_pass",
+      "to": "node_invalido",
+      "label": "Incorrecto"
+    },
+    {
+      "from": "node_valido",
+      "to": "node_index",
+      "label": "Acceso concedido"
+    },
+    {
+      "from": "node_invalido",
+      "to": "node_cred_invalida",
+      "label": ""
+    },
+    {
+      "from": "node_invalido",
+      "to": "node_cred_no_reg",
+      "label": ""
+    },
+    {
+      "from": "node_invalido",
+      "to": "node_forgot_pass",
+      "label": "Mejora UX: Recuperar"
+    },
+    {
+      "from": "node_signin",
+      "to": "node_signin_nombre",
+      "label": ""
+    },
+    {
+      "from": "node_signin_nombre",
+      "to": "node_signin_nac",
+      "label": ""
+    },
+    {
+      "from": "node_signin_nac",
+      "to": "node_signin_ciudad",
+      "label": ""
+    },
+    {
+      "from": "node_signin_ciudad",
+      "to": "node_signin_mail",
+      "label": ""
+    },
+    {
+      "from": "node_signin_mail",
+      "to": "node_signin_pass",
+      "label": ""
+    },
+    {
+      "from": "node_signin_pass",
+      "to": "node_signin_terms",
+      "label": ""
+    },
+    {
+      "from": "node_signin_terms",
+      "to": "node_datos_validos",
+      "label": ""
+    },
+    {
+      "from": "node_datos_validos",
+      "to": "node_index",
+      "label": "Registro OK"
+    },
+    {
+      "from": "node_google",
+      "to": "node_signin_terms",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_navbar",
+      "label": ""
+    },
+    {
+      "from": "node_navbar",
+      "to": "node_global_search",
+      "label": "Mejora"
+    },
+    {
+      "from": "node_index",
+      "to": "node_intro",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_testimonios",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_lugares",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_empresas",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_instituciones",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_notificaciones",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_agenda",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_novedades",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_biblioteca",
+      "label": ""
+    },
+    {
+      "from": "node_index",
+      "to": "node_menu",
+      "label": ""
+    },
+    {
+      "from": "node_intro",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_testimonios",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_lugares",
+      "to": "node_lugares_filtro",
+      "label": ""
+    },
+    {
+      "from": "node_lugares",
+      "to": "node_lugares_busqueda",
+      "label": ""
+    },
+    {
+      "from": "node_lugares_filtro",
+      "to": "node_lugares_list",
+      "label": ""
+    },
+    {
+      "from": "node_lugares_busqueda",
+      "to": "node_lugares_list",
+      "label": ""
+    },
+    {
+      "from": "node_lugares_list",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_empresas",
+      "to": "node_empresas_filtro",
+      "label": ""
+    },
+    {
+      "from": "node_empresas",
+      "to": "node_empresas_busqueda",
+      "label": ""
+    },
+    {
+      "from": "node_empresas_filtro",
+      "to": "node_empresas_list",
+      "label": ""
+    },
+    {
+      "from": "node_empresas_busqueda",
+      "to": "node_empresas_list",
+      "label": ""
+    },
+    {
+      "from": "node_empresas_list",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_instituciones",
+      "to": "node_inst_filtro",
+      "label": ""
+    },
+    {
+      "from": "node_instituciones",
+      "to": "node_inst_busqueda",
+      "label": ""
+    },
+    {
+      "from": "node_inst_filtro",
+      "to": "node_inst_list",
+      "label": ""
+    },
+    {
+      "from": "node_inst_busqueda",
+      "to": "node_inst_list",
+      "label": ""
+    },
+    {
+      "from": "node_inst_list",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_notificaciones",
+      "to": "node_notif_selector",
+      "label": ""
+    },
+    {
+      "from": "node_notif_selector",
+      "to": "node_notif_proximo",
+      "label": ""
+    },
+    {
+      "from": "node_notif_proximo",
+      "to": "node_notif_tarjeta",
+      "label": ""
+    },
+    {
+      "from": "node_notif_proximo",
+      "to": "node_notif_dia",
+      "label": ""
+    },
+    {
+      "from": "node_notif_tarjeta",
+      "to": "node_notif_registrar",
+      "label": ""
+    },
+    {
+      "from": "node_notif_dia",
+      "to": "node_notif_agendar",
+      "label": ""
+    },
+    {
+      "from": "node_agenda",
+      "to": "node_agenda_cal",
+      "label": ""
+    },
+    {
+      "from": "node_agenda_cal",
+      "to": "node_notif_dia",
+      "label": ""
+    },
+    {
+      "from": "node_notif_dia",
+      "to": "node_agenda_tarjeta",
+      "label": ""
+    },
+    {
+      "from": "node_agenda_tarjeta",
+      "to": "node_agenda_year",
+      "label": ""
+    },
+    {
+      "from": "node_agenda_tarjeta",
+      "to": "node_agenda_kw",
+      "label": ""
+    },
+    {
+      "from": "node_notif_registrar",
+      "to": "node_agenda_ticket_imp",
+      "label": "Mejora"
+    },
+    {
+      "from": "node_notif_agendar",
+      "to": "node_agenda_ticket_imp",
+      "label": "Mejora"
+    },
+    {
+      "from": "node_novedades",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_biblioteca",
+      "to": "node_bib_stream",
+      "label": ""
+    },
+    {
+      "from": "node_bib_stream",
+      "to": "node_bib_musica",
+      "label": ""
+    },
+    {
+      "from": "node_bib_stream",
+      "to": "node_bib_doc",
+      "label": ""
+    },
+    {
+      "from": "node_bib_stream",
+      "to": "node_bib_podcast",
+      "label": ""
+    },
+    {
+      "from": "node_bib_stream",
+      "to": "node_bib_gacetas",
+      "label": ""
+    },
+    {
+      "from": "node_bib_musica",
+      "to": "node_carrusel",
+      "label": ""
+    },
+    {
+      "from": "node_bib_doc",
+      "to": "node_carrusel",
+      "label": ""
+    },
+    {
+      "from": "node_bib_podcast",
+      "to": "node_carrusel",
+      "label": ""
+    },
+    {
+      "from": "node_bib_gacetas",
+      "to": "node_carrusel",
+      "label": ""
+    },
+    {
+      "from": "node_carrusel",
+      "to": "node_reproductor",
+      "label": ""
+    },
+    {
+      "from": "node_reproductor",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_reproductor",
+      "to": "node_player_controls_imp",
+      "label": "Mejora UX"
+    },
+    {
+      "from": "node_menu",
+      "to": "node_faqs",
+      "label": ""
+    },
+    {
+      "from": "node_menu",
+      "to": "node_perfil_config",
+      "label": ""
+    },
+    {
+      "from": "node_menu",
+      "to": "node_contacto",
+      "label": ""
+    },
+    {
+      "from": "node_menu",
+      "to": "node_inspirador",
+      "label": ""
+    },
+    {
+      "from": "node_faqs",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_contacto",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_inspirador",
+      "to": "node_media_pill",
+      "label": ""
+    },
+    {
+      "from": "node_perfil_config",
+      "to": "node_prof_usuario",
+      "label": ""
+    },
+    {
+      "from": "node_perfil_config",
+      "to": "node_prof_config",
+      "label": ""
+    },
+    {
+      "from": "node_perfil_config",
+      "to": "node_prof_registro",
+      "label": ""
+    },
+    {
+      "from": "node_prof_usuario",
+      "to": "node_usr_nombre",
+      "label": ""
+    },
+    {
+      "from": "node_prof_usuario",
+      "to": "node_usr_login_data",
+      "label": ""
+    },
+    {
+      "from": "node_prof_usuario",
+      "to": "node_usr_nac",
+      "label": ""
+    },
+    {
+      "from": "node_prof_usuario",
+      "to": "node_usr_ciudad",
+      "label": ""
+    },
+    {
+      "from": "node_usr_nombre",
+      "to": "node_usr_edit",
+      "label": ""
+    },
+    {
+      "from": "node_usr_login_data",
+      "to": "node_usr_google_acc",
+      "label": ""
+    },
+    {
+      "from": "node_usr_login_data",
+      "to": "node_usr_mail_reg",
+      "label": ""
+    },
+    {
+      "from": "node_usr_edit",
+      "to": "node_usr_pass_act",
+      "label": ""
+    },
+    {
+      "from": "node_usr_edit",
+      "to": "node_usr_pass_new",
+      "label": ""
+    },
+    {
+      "from": "node_usr_nac",
+      "to": "node_usr_edit",
+      "label": ""
+    },
+    {
+      "from": "node_usr_ciudad",
+      "to": "node_usr_edit",
+      "label": ""
+    },
+    {
+      "from": "node_prof_config",
+      "to": "node_cfg_theme",
+      "label": ""
+    },
+    {
+      "from": "node_prof_config",
+      "to": "node_cfg_notif",
+      "label": ""
+    },
+    {
+      "from": "node_prof_config",
+      "to": "node_cfg_permissions",
+      "label": ""
+    },
+    {
+      "from": "node_cfg_permissions",
+      "to": "node_cfg_os_perm",
+      "label": ""
+    },
+    {
+      "from": "node_prof_registro",
+      "to": "node_pol_sec",
+      "label": ""
+    },
+    {
+      "from": "node_prof_registro",
+      "to": "node_terms_cond",
+      "label": ""
+    },
+    {
+      "from": "node_prof_registro",
+      "to": "node_terms_auto_verif",
+      "label": ""
+    },
+    {
+      "from": "node_prof_registro",
+      "to": "node_normativas",
+      "label": ""
+    },
+    {
+      "from": "node_pol_sec",
+      "to": "node_pol_acepto",
+      "label": ""
+    },
+    {
+      "from": "node_pol_sec",
+      "to": "node_pol_declinar",
+      "label": ""
+    },
+    {
+      "from": "node_pol_declinar",
+      "to": "node_adv_pol",
+      "label": ""
+    },
+    {
+      "from": "node_adv_pol",
+      "to": "node_conf_pol",
+      "label": "Aceptar"
+    },
+    {
+      "from": "node_pol_acepto",
+      "to": "node_conf_pol",
+      "label": ""
+    },
+    {
+      "from": "node_terms_cond",
+      "to": "node_pol_acepto",
+      "label": ""
+    },
+    {
+      "from": "node_terms_cond",
+      "to": "node_pol_declinar",
+      "label": ""
+    },
+    {
+      "from": "node_terms_auto_verif",
+      "to": "node_verif_auto_check",
+      "label": ""
+    },
+    {
+      "from": "node_verif_auto_check",
+      "to": "node_verif_aceptadas",
+      "label": ""
+    },
+    {
+      "from": "node_verif_auto_check",
+      "to": "node_verif_no_leidas",
+      "label": ""
+    },
+    {
+      "from": "node_verif_no_leidas",
+      "to": "node_adv_pol",
+      "label": ""
+    },
+    {
+      "from": "node_normativas",
+      "to": "node_pol_acepto",
+      "label": ""
+    },
+    {
+      "from": "node_normativas",
+      "to": "node_pol_declinar",
+      "label": ""
+    },
+    {
+      "from": "node_normativas",
+      "to": "node_adv_norm",
+      "label": ""
+    },
+    {
+      "from": "node_adv_norm",
+      "to": "node_conf_pol",
+      "label": "Aceptar"
+    },
+    {
+      "from": "node_conf_pol",
+      "to": "node_kyc_nombre",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_nombre",
+      "to": "node_kyc_dni",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_dni",
+      "to": "node_kyc_foto_frente",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_dni",
+      "to": "node_kyc_foto_dorso",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_foto_frente",
+      "to": "node_kyc_camara1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_foto_frente",
+      "to": "node_kyc_cargar1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_foto_dorso",
+      "to": "node_kyc_camara1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_foto_dorso",
+      "to": "node_kyc_cargar1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_camara1",
+      "to": "node_kyc_valido1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_camara1",
+      "to": "node_kyc_invalido1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_cargar1",
+      "to": "node_kyc_valido1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_cargar1",
+      "to": "node_kyc_invalido1",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_dni",
+      "to": "node_kyc_pais",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_pais",
+      "to": "node_kyc_provincia",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_provincia",
+      "to": "node_kyc_ciudad",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_ciudad",
+      "to": "node_kyc_cp",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_cp",
+      "to": "node_kyc_email",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_email",
+      "to": "node_kyc_telefono",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_telefono",
+      "to": "node_kyc_foto_front",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_foto_front",
+      "to": "node_kyc_camara2",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_foto_front",
+      "to": "node_kyc_cargar2",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_camara2",
+      "to": "node_kyc_valido2",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_camara2",
+      "to": "node_kyc_invalido2",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_cargar2",
+      "to": "node_kyc_valido2",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_cargar2",
+      "to": "node_kyc_invalido2",
+      "label": ""
+    },
+    {
+      "from": "node_kyc_valido2",
+      "to": "node_enviar_datos",
+      "label": ""
+    },
+    {
+      "from": "node_enviar_datos",
+      "to": "node_servidor_admin",
+      "label": ""
+    },
+    {
+      "from": "node_servidor_admin",
+      "to": "node_kyc_status_hub_imp",
+      "label": "Mejora"
+    }
+  ]
+};
+  </script>
+
+  <script>
+    let flowData = INITIAL_FLOW_DATA;
+    let zoomLevel = 0.8;
+    let panX = 40;
+    let panY = 40;
+    let isPanning = false;
+    let startX, startY;
+    let selectedNodeId = null;
+    
+    // Performance Cache for DOM Node Dimensions
+    const nodeDimensionsCache = new Map();
+    let isAnimFrameScheduled = false;
+    let draggingNodeId = null;
+
+    if (window.location.protocol.startsWith('http')) {
+      fetch('user_flow_data.json')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.nodes) flowData = data;
+          initApp();
+        })
+        .catch(err => {
+          console.warn("Fetch failed, using embedded initial data:", err);
+          initApp();
+        });
+    } else {
+      initApp();
+    }
+
+    function initApp() {
+      renderFlow();
+      updateTransform();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderFlow() {
+      const container = document.getElementById('nodes-container');
+      container.innerHTML = '';
+
+      nodeDimensionsCache.clear();
+
+      flowData.nodes.forEach(node => {
+        const nodeEl = document.createElement('div');
+        nodeEl.className = 'flow-node';
+        nodeEl.id = `node-el-${node.id}`;
+        nodeEl.dataset.id = node.id;
+        nodeEl.dataset.cat = node.category || 'auth';
+        nodeEl.dataset.status = node.status || 'original';
+        nodeEl.style.left = `${node.x}px`;
+        nodeEl.style.top = `${node.y}px`;
+
+        let listHtml = '';
+        if (node.listItems && node.listItems.length > 0) {
+          listHtml = `
+            <div class="node-list-container">
+              ${node.listItems.map(item => `<div class="node-list-item"><i data-lucide="check-circle-2" style="width:12px;height:12px;color:#38bdf8;"></i> ${item}</div>`).join('')}
+            </div>
+          `;
+        }
+
+        const isNavBar = node.id === 'node_navbar';
+        const isHeader = node.id === 'node_shell_header';
+        const isNotif = node.id === 'node_notificaciones';
+        const isUnifiedCard = node.id === 'node_event_card_unified';
+
+        const tagText = isUnifiedCard ? 'TARJETA DE EVENTO' : (isNotif ? 'CAMPANITA' : (isHeader ? 'HEADER FLOTANTE' : (isNavBar ? '5 BOTONES' : (node.status === 'improved' ? 'MEJORA' : (node.type || 'PANTALLA')))));
+        const tagBg = isUnifiedCard ? '#3b82f6' : (isNotif ? '#ef4444' : (isHeader ? '#3b82f6' : (isNavBar ? '#10b981' : (node.status === 'improved' ? '#7c3aed' : 'rgba(255,255,255,0.1)'))));
+
+        nodeEl.innerHTML = `
+          <div class="node-header">
+            <span class="node-title">${node.screenCode ? `<span style="background:rgba(59,130,246,0.25); color:#60a5fa; border:1px solid rgba(96,165,250,0.4); padding:2px 6px; border-radius:4px; font-family:monospace; font-size:11px; margin-right:6px;">${node.screenCode}</span>` : ''}${node.label}</span>
+            <span class="node-tag" style="background:${tagBg}">${tagText}</span>
+          </div>
+          ${node.description ? `<div class="node-desc">${node.description}</div>` : ''}
+          ${listHtml}
+        `;
+
+        enableNodeDrag(nodeEl, node);
+
+        nodeEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectNode(node.id);
+        });
+
+        container.appendChild(nodeEl);
+      });
+
+      buildConnectionsSVG();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function buildConnectionsSVG() {
+      const pathsGroup = document.getElementById('paths-group');
+      pathsGroup.innerHTML = '';
+
+      flowData.connections.forEach(conn => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const pathId = `path-${conn.from}-${conn.to}`;
+        path.setAttribute('id', pathId);
+
+        const isFromShellHeader = conn.from === 'node_shell_header';
+        const isFromNavBar = conn.from === 'node_navbar';
+        const isFromIntro = conn.from === 'node_intro';
+        const isFromNotifSelector = conn.from === 'node_notif_selector';
+        const isImproved = conn.label && conn.label.includes('Mejora');
+        
+        let strokeColor = isFromNotifSelector ? '#ef4444' : (isFromShellHeader ? '#3b82f6' : (isFromNavBar ? '#10b981' : (isFromIntro ? '#f97316' : (isImproved ? '#a855f7' : '#475569'))));
+        let marker = isFromNotifSelector ? 'url(#arrow-improved)' : (isFromShellHeader ? 'url(#arrow-shell)' : (isFromNavBar ? 'url(#arrow-navbar)' : (isImproved ? 'url(#arrow-improved)' : 'url(#arrow)')));
+
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', strokeColor);
+        path.setAttribute('stroke-width', isFromNotifSelector || isFromShellHeader || isFromNavBar || isFromIntro ? '2.5' : (isImproved ? '2.5' : '1.8'));
+        if (isImproved || isFromNotifSelector) path.setAttribute('stroke-dasharray', '4,4');
+        path.setAttribute('marker-end', marker);
+
+        pathsGroup.appendChild(path);
+      });
+
+      updateAllPaths();
+    }
+
+    function getNodeBounds(nodeId) {
+      if (nodeDimensionsCache.has(nodeId)) {
+        return nodeDimensionsCache.get(nodeId);
+      }
+      const el = document.getElementById(`node-el-${nodeId}`);
+      if (!el) return { width: 200, height: 60 };
+      
+      const bounds = {
+        width: el.offsetWidth || 200,
+        height: el.offsetHeight || 60
+      };
+      nodeDimensionsCache.set(nodeId, bounds);
+      return bounds;
+    }
+
+    function updateAllPaths() {
+      flowData.connections.forEach(conn => {
+        updateSinglePath(conn.from, conn.to, conn.label);
+      });
+    }
+
+    function updateConnectedPaths(nodeId) {
+      flowData.connections.forEach(conn => {
+        if (conn.from === nodeId || conn.to === nodeId) {
+          updateSinglePath(conn.from, conn.to, conn.label);
+        }
+      });
+    }
+
+    function updateSinglePath(fromId, toId, label) {
+      const pathEl = document.getElementById(`path-${fromId}-${toId}`);
+      if (!pathEl) return;
+
+      const fromNode = flowData.nodes.find(n => n.id === fromId);
+      const toNode = flowData.nodes.find(n => n.id === toId);
+
+      if (!fromNode || !toNode) return;
+
+      const fromBounds = getNodeBounds(fromId);
+      const toBounds = getNodeBounds(toId);
+
+      const startX = fromNode.x + fromBounds.width;
+      const startY = fromNode.y + fromBounds.height / 2;
+      const endX = toNode.x;
+      const endY = toNode.y + toBounds.height / 2;
+
+      const dx = Math.abs(endX - startX) * 0.5;
+      const d = `M ${startX} ${startY} C ${startX + dx} ${startY}, ${endX - dx} ${endY}, ${endX} ${endY}`;
+      
+      pathEl.setAttribute('d', d);
+    }
+
+    function enableNodeDrag(nodeEl, nodeData) {
+      let isDragging = false;
+      let initialX, initialY;
+
+      nodeEl.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+        isDragging = true;
+        draggingNodeId = nodeData.id;
+        initialX = e.clientX - nodeData.x * zoomLevel;
+        initialY = e.clientY - nodeData.y * zoomLevel;
+
+        const onMouseMove = (moveEvent) => {
+          if (!isDragging) return;
+          nodeData.x = (moveEvent.clientX - initialX) / zoomLevel;
+          nodeData.y = (moveEvent.clientY - initialY) / zoomLevel;
+          
+          nodeEl.style.left = `${nodeData.x}px`;
+          nodeEl.style.top = `${nodeData.y}px`;
+
+          if (!isAnimFrameScheduled) {
+            isAnimFrameScheduled = true;
+            requestAnimationFrame(() => {
+              updateConnectedPaths(nodeData.id);
+              isAnimFrameScheduled = false;
+            });
+          }
+        };
+
+        const onMouseUp = () => {
+          isDragging = false;
+          draggingNodeId = null;
+          nodeDimensionsCache.delete(nodeData.id);
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        };
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+    }
+
+    function startPan(e) {
+      if (e.target.closest('.flow-node')) return;
+      isPanning = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+
+      const onPanMove = (moveEvent) => {
+        if (!isPanning) return;
+        panX = moveEvent.clientX - startX;
+        panY = moveEvent.clientY - startY;
+        updateTransform();
+      };
+
+      const onPanEnd = () => {
+        isPanning = false;
+        window.removeEventListener('mousemove', onPanMove);
+        window.removeEventListener('mouseup', onPanEnd);
+      };
+
+      window.addEventListener('mousemove', onPanMove);
+      window.addEventListener('mouseup', onPanEnd);
+    }
+
+    function handleZoom(e) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.08 : 0.08;
+      zoomLevel = Math.min(Math.max(0.2, zoomLevel + delta), 2.5);
+      updateTransform();
+    }
+
+    function zoomIn() { zoomLevel = Math.min(2.5, zoomLevel + 0.15); updateTransform(); }
+    function zoomOut() { zoomLevel = Math.max(0.2, zoomLevel - 0.15); updateTransform(); }
+    function resetZoom() { zoomLevel = 0.8; panX = 40; panY = 40; updateTransform(); }
+
+    function updateTransform() {
+      const container = document.getElementById('canvas-container');
+      container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+    }
+
+    function selectNode(nodeId) {
+      document.querySelectorAll('.flow-node').forEach(el => el.classList.remove('selected'));
+      selectedNodeId = nodeId;
+
+      const node = flowData.nodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      const nodeEl = document.getElementById(`node-el-${nodeId}`);
+      if (nodeEl) nodeEl.classList.add('selected');
+
+      document.getElementById('edit-node-id').value = node.id;
+      document.getElementById('edit-node-label').value = node.label;
+      document.getElementById('edit-node-category').value = node.category || 'auth';
+      document.getElementById('edit-node-type').value = node.type || 'screen';
+      document.getElementById('edit-node-status').value = node.status || 'original';
+      document.getElementById('edit-node-desc').value = node.description || '';
+      document.getElementById('edit-node-items').value = (node.listItems || []).join('\n');
+
+      document.getElementById('inspector-drawer').classList.add('open');
+    }
+
+    function closeDrawer() {
+      document.getElementById('inspector-drawer').classList.remove('open');
+    }
+
+    function saveNodeEdits(e) {
+      e.preventDefault();
+      const nodeId = document.getElementById('edit-node-id').value;
+      const node = flowData.nodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      node.label = document.getElementById('edit-node-label').value;
+      node.category = document.getElementById('edit-node-category').value;
+      node.type = document.getElementById('edit-node-type').value;
+      node.status = document.getElementById('edit-node-status').value;
+      node.description = document.getElementById('edit-node-desc').value;
+      
+      const itemsText = document.getElementById('edit-node-items').value;
+      node.listItems = itemsText.split('\n').map(i => i.trim()).filter(i => i.length > 0);
+
+      renderFlow();
+      closeDrawer();
+    }
+
+    function deleteCurrentNode() {
+      if (!selectedNodeId) return;
+      flowData.nodes = flowData.nodes.filter(n => n.id !== selectedNodeId);
+      flowData.connections = flowData.connections.filter(c => c.from !== selectedNodeId && c.to !== selectedNodeId);
+      renderFlow();
+      closeDrawer();
+    }
+
+    function openAddNodeModal() {
+      const newId = `node_custom_${Date.now()}`;
+      const newNode = {
+        id: newId,
+        label: "NUEVO PASO UX",
+        category: "improved",
+        type: "screen",
+        status: "improved",
+        x: Math.abs(panX) + 300,
+        y: Math.abs(panY) + 200,
+        description: "Descripción de la pantalla..."
+      };
+      flowData.nodes.push(newNode);
+      renderFlow();
+      selectNode(newId);
+    }
+
+    function filterNodesBySearch() {
+      const q = document.getElementById('search-input').value.toLowerCase();
+      flowData.nodes.forEach(node => {
+        const el = document.getElementById(`node-el-${node.id}`);
+        if (!el) return;
+        const matches = node.label.toLowerCase().includes(q) || (node.description && node.description.toLowerCase().includes(q)) || (node.screenCode && node.screenCode.toLowerCase().includes(q));
+        el.style.opacity = matches || !q ? '1' : '0.15';
+      });
+    }
+
+    function applyViewFilter() {
+      const val = document.getElementById('view-filter').value;
+      flowData.nodes.forEach(node => {
+        const el = document.getElementById(`node-el-${node.id}`);
+        if (!el) return;
+        let show = true;
+        if (val === 'original') show = node.status === 'original';
+        else if (val === 'improved') show = node.status === 'improved';
+        else if (val !== 'all') show = node.category === val;
+        
+        el.style.display = show ? 'block' : 'none';
+      });
+
+      flowData.connections.forEach(conn => {
+        const pathEl = document.getElementById(`path-${conn.from}-${conn.to}`);
+        if (!pathEl) return;
+        const fromEl = document.getElementById(`node-el-${conn.from}`);
+        const toEl = document.getElementById(`node-el-${conn.to}`);
+        const visible = fromEl && fromEl.style.display !== 'none' && toEl && toEl.style.display !== 'none';
+        pathEl.style.display = visible ? 'block' : 'none';
+      });
+
+      updateAllPaths();
+    }
+
+    function openMermaidModal() {
+      let code = "graph LR\n";
+      flowData.nodes.forEach(n => {
+        const shape = n.type === 'decision' ? `{${n.label}}` : `[${n.label}]`;
+        code += `  ${n.id}${shape}\n`;
+      });
+      flowData.connections.forEach(c => {
+        const labelStr = c.label ? `|${c.label}|` : '';
+        code += `  ${c.from} -->${labelStr} ${c.to}\n`;
+      });
+      document.getElementById('mermaid-code-output').textContent = code;
+      document.getElementById('mermaid-modal').classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function copyMermaidCode() {
+      const text = document.getElementById('mermaid-code-output').textContent;
+      navigator.clipboard.writeText(text);
+      alert('¡Código Mermaid copiado al portapapeles!');
+    }
+
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flowData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "feeling_user_flow_edited.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+  </script>
+</body>
+</html>

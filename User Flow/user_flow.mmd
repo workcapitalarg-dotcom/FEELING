@@ -1,0 +1,172 @@
+graph LR
+    %% STYLE DEFINITIONS
+    classDef startStyle fill:#71717a,stroke:#3f3f46,color:#fff,stroke-width:2px;
+    classDef screenStyle fill:#22c55e,stroke:#15803d,color:#fff,stroke-width:2px;
+    classDef navbarStyle fill:#10b981,stroke:#047857,color:#fff,stroke-width:3px;
+    classDef headerStyle fill:#3b82f6,stroke:#1d4ed8,color:#fff,stroke-width:3px;
+    classDef notifStyle fill:#ef4444,stroke:#b91c1c,color:#fff,stroke-width:3px;
+    classDef actionStyle fill:#3b82f6,stroke:#1d4ed8,color:#fff,stroke-width:2px;
+    classDef dirStyle fill:#f97316,stroke:#c2410c,color:#fff,stroke-width:2px;
+    classDef mediaStyle fill:#eab308,stroke:#a16207,color:#000,stroke-width:2px;
+    classDef listStyle fill:#ec4899,stroke:#be185d,color:#fff,stroke-width:2px;
+    classDef improvedStyle fill:#a855f7,stroke:#6b21a8,color:#fff,stroke-width:3px,stroke-dasharray: 5 5;
+
+    %% AUTH SECTION WITH FULL RETRY LOOPS
+    INICIO[INICIO] ::: startStyle --> LOG_IN[LOG IN] ::: screenStyle
+    INICIO --> SIGN_IN[SIGN IN] ::: screenStyle
+    INICIO --> GOOGLE[GOOGLE] ::: screenStyle
+
+    LOG_IN --> USUARIO[USUARIO] --> CONTRASEÑA[CONTRASEÑA]
+    CONTRASEÑA --> VALIDO{VÁLIDO} ::: screenStyle
+    CONTRASEÑA --> INVALIDO{INVÁLIDO} ::: actionStyle
+
+    VALIDO --> INDEX[INDEX / APP SHELL] ::: screenStyle
+    INVALIDO --> CRED_INV[CREDENCIAL INVÁLIDA]
+    INVALIDO --> CRED_NO_REG[CREDENCIAL NO REGISTRADA]
+    INVALIDO -.-> RECUPERAR_PASS["¿OLVIDASTE TU CONTRASEÑA? (Mejora)"] ::: improvedStyle
+
+    %% RETORNO DE ERRORES DE AUTENTICACIÓN
+    CRED_INV -->|Reintentar| LOG_IN
+    CRED_NO_REG -->|Crear Cuenta| SIGN_IN
+
+    SIGN_IN --> SIGN_NOMBRE[NOMBRE Y APELLIDO] --> SIGN_NAC[FECHA NACIMIENTO] --> SIGN_CIUDAD[CIUDAD / PAÍS] --> SIGN_MAIL[MAIL] --> SIGN_PASS[CONTRASEÑA] --> SIGN_TERMS{TÉRMINOS Y CONDICIONES}
+    GOOGLE --> SIGN_TERMS
+    SIGN_TERMS --> DATOS_VALIDOS{DATOS VÁLIDOS} --> INDEX
+
+    %% INDEX (APP SHELL) -> HEADER FLOTANTE SUPERIOR DERECHO & NAVBAR INFERIOR
+    INDEX --> HEADER["↗️ HEADER FLOTANTE SUPERIOR DERECHO (SHELL)"] ::: headerStyle
+    INDEX --> NAVBAR["📱 NAVBAR INFERIOR PERSISTENTE (5 BOTONES)"] ::: navbarStyle
+
+    %% BOTONES FLOTANTES SUPERIOR DERECHO EN EL SHELL
+    HEADER -->|Botón 1| OMNIBOX["🔍 BÚSQUEDA GLOBAL / OMNIBOX"] ::: improvedStyle
+    HEADER -->|Botón 2| NOTIFICACIONES["🔔 CAMPANITA DE NOTIFICACIONES"] ::: notifStyle
+
+    %% SELECTOR UNIFICADO COMO DESPACHADOR OMNIDIRECCIONAL A TODAS LAS ÁREAS ACTUALIZABLES Y AVISOS AUTÓNOMOS
+    NOTIFICACIONES --> N_SEL["📋 PANEL / SELECTOR DESPLEGABLE DE NOTIFICACIONES"] ::: notifStyle
+    
+    N_SEL -.->|Aviso Autónomo| STANDALONE["📢 Comunicado / Popup Autónomo"] ::: screenStyle
+    N_SEL -.->|Nueva Playlist/Audio| BIBLIOTECA["4️⃣ BIBLIOTECA"] ::: screenStyle
+    N_SEL -.->|Nuevo Testimonio| TESTIMONIOS["TARJETA TESTIMONIOS"] ::: dirStyle
+    N_SEL -.->|Media/Empresas| EMPRESAS["TARJETA EMPRESAS"] ::: dirStyle
+    N_SEL -.->|Actualización Predios/Sedes| LUGARES["TARJETA LUGARES"] ::: dirStyle
+    N_SEL -.->|Actualización Instituciones| INSTITUCIONES["TARJETA INSTITUCIONES"] ::: dirStyle
+    N_SEL -.->|Anuncio del Día| NOVEDADES["3️⃣ NOVEDADES (HISTORIAS 24H)"] ::: screenStyle
+    N_SEL -.->|Evento de Agenda| TARJETA_UNIFICADA["🖼️ TARJETA DE EVENTO UNIFICADA"] ::: screenStyle
+    N_SEL -.->|Alerta Perfil Incompleto N Días| REGISTRO_VERIF["REGISTRO VERIFICACIÓN"] ::: screenStyle
+
+    %% LOS 5 BOTONES DE LA NAVBAR INFERIOR
+    NAVBAR -->|1. Botón| INTRO["1️⃣ INTRO (HOME APP)"] ::: screenStyle
+    NAVBAR -->|2. Botón| AGENDA["2️⃣ AGENDA"] ::: screenStyle
+    NAVBAR -->|3. Botón| NOVEDADES ::: screenStyle
+    NAVBAR -->|4. Botón| BIBLIOTECA ::: screenStyle
+    NAVBAR -->|5. Botón| MENU["5️⃣ MENÚ / MÁS"] ::: screenStyle
+
+    %% BOTÓN 1: INTRO MUESTRA 4 TARJETAS INICIALES (INTRODUCCIÓN EFÍMERA + TESTIMONIOS + LUGARES E INSTITUCIONES + EMPRESAS)
+    INTRO -->|Tarjeta 1| T_ONBOARDING["TARJETA INTRODUCCIÓN COMUNIDAD (EFÍMERA)"] ::: dirStyle
+    INTRO -->|Tarjeta 2| TESTIMONIOS
+    INTRO -->|Tarjeta 3| LUGARES["TARJETA LUGARES E INSTITUCIONES (DIRECTORIO)"] ::: dirStyle
+    INTRO -->|Tarjeta 4| EMPRESAS
+
+    %% TARJETA ONBOARDING DESAPARECE TRAS LECTURA COMPLETA
+    T_ONBOARDING --> MEDIA_ONB["LECTURA / VIDEO INTRODUCCIÓN COMUNIDAD"] ::: mediaStyle
+    MEDIA_ONB --> FINISH_ONB["ENTENDIDO / LEÍDO COMPLETO"] ::: actionStyle
+    FINISH_ONB -.->|Desaparece tarjeta| INTRO
+
+    %% DIRECTORIOS ALIMENTAN AL FILTRO POR CATEGORÍAS Y MEDIA POOL FEED
+    TESTIMONIOS --> MEDIA_POOL["📱 MEDIA POOL (FEED INSTAGRAM/YOUTUBE/NEWS)"] ::: mediaStyle
+    LUGARES --> DIR_FILTERS["FILTRO CATEGORÍAS (CHIPS)"] ::: actionStyle
+    EMPRESAS --> DIR_FILTERS
+
+    DIR_FILTERS --> MEDIA_POOL
+
+    %% BOTÓN 2 AGENDA -> PRÓXIMO (SCR-301) -> CALENDARIO (SCR-302)
+    AGENDA["AGENDA - PRÓXIMO (SCR-301)"] ::: screenStyle
+    AGENDA -->|Ver Calendario| A_CAL["CALENDARIO (SCR-302)"] ::: screenStyle
+    AGENDA -->|Ver Evento| DIA_PERIODO["DÍA O PERÍODO MARCADO"] ::: screenStyle
+
+    A_CAL --> A_YEAR[SELECTOR AÑO/MES]
+    A_CAL --> A_KW[BÚSQUEDA POR PALABRA]
+
+    A_PROXIMO --> DIA_PERIODO["DÍA O PERÍODO MARCADO (1 DÍA O VARIOS DÍAS)"] ::: screenStyle
+    A_CAL --> DIA_PERIODO
+
+    DIA_PERIODO --> TARJETA_UNIFICADA
+
+    %% DENTRO DE LA TARJETA UNIFICADA VIVEN AMBOS BOTONES
+    TARJETA_UNIFICADA --> BTN_REG["1️⃣ BOTÓN REGISTRARSE"] ::: actionStyle
+    TARJETA_UNIFICADA --> BTN_AGEN["2️⃣ BOTÓN AGENDAR"] ::: actionStyle
+
+    BTN_AGEN --> EXT_CALENDAR["CALENDARIO EXTERNO DEL CELULAR (GOOGLE/APPLE CALENDAR)"] ::: system
+    EXT_CALENDAR -.->|Retorna a| TARJETA_UNIFICADA
+
+    %% FLUJO GUIADO DE VALIDACIÓN KYC AL PRESIONAR REGISTRARSE
+    BTN_REG --> KYC_EVALUA{"¿USUARIO VERIFICADO?"} ::: actionStyle
+    
+    %% RAMA A: NO VERIFICADO
+    KYC_EVALUA -->|No Verificado| KYC_MODAL["MODAL GUIADO: Completar Registro o Contactar Admisión"] ::: screenStyle
+    KYC_MODAL -->|Opción A| REGISTRO_VERIF
+    REGISTRO_VERIF -.->|Al finalizar KYC| TARJETA_UNIFICADA
+    KYC_MODAL -->|Opción B| WA_ADMISION["WHATSAPP ADMISIÓN DIRECTO"] ::: actionStyle
+    WA_ADMISION -.->|Al retornar de WA| TARJETA_UNIFICADA
+
+    %% RAMA B: SÍ VERIFICADO
+    KYC_EVALUA -->|Sí Verificado| DIALOG_VERIF["¿Deseas asistir presencialmente a este evento? Te pondremos en contacto con admisión"] ::: screenStyle
+    DIALOG_VERIF -->|Botón ACEPTAR| KYC_STATUS["MENSAJE: YA TENEMOS TU REGISTRO (Servidor Adm en breve)"] ::: system
+    DIALOG_VERIF -->|Botón DECLINAR| TARJETA_UNIFICADA
+
+    %% BOTÓN 3: NOVEDADES (HISTORIAS EFÍMERAS 24H)
+    NOVEDADES --> MEDIA_POOL
+
+    %% BOTÓN 4: BIBLIOTECA
+    BIBLIOTECA --> MEDIA_STREAM[MEDIA / STREAM]
+    MEDIA_STREAM --> MUSICA[MÚSICA]
+    MEDIA_STREAM --> DOCS[DOCUMENTALES]
+    MEDIA_STREAM --> PODCAST[PODCAST]
+    MEDIA_STREAM --> CANCIONERO[GACETILLAS / ORACIONES / CANCIONERO]
+
+    MUSICA --> CARRUSEL[CARRUSEL]
+    DOCS --> CARRUSEL
+    PODCAST --> CARRUSEL
+    CANCIONERO --> CARRUSEL
+    CARRUSEL --> REPRODUCTOR["REPRODUCTOR STREAMING (CON/SIN CONEXIÓN)"] --> MEDIA_POOL
+    REPRODUCTOR -.-> PLAYER_IMP["CONTROLES AVANZADOS + OFFLINE (Mejora)"] ::: improvedStyle
+
+    %% BOTÓN 5: MENÚ (FAQS, CONTACTO, NUESTRO INSPIRADOR, PERFIL/CONFIG)
+    MENU --> FAQS[FAQS] ::: screenStyle --> MEDIA_POOL
+    MENU --> CONTACTO[CONTACTO] ::: screenStyle --> MEDIA_POOL
+    MENU --> INSPIRADOR[NUESTRO INSPIRADOR] ::: screenStyle --> MEDIA_POOL
+    MENU --> PERFIL[PERFIL Y CONFIG] ::: screenStyle
+
+    %% PERFIL Y CONFIG
+    PERFIL --> USR[USUARIO] ::: screenStyle
+    PERFIL --> CFG[CONFIG APP] ::: screenStyle
+    PERFIL --> REGISTRO_VERIF ::: screenStyle
+
+    USR --> USR_NOM[NOMBRE] --> USR_EDIT[EDITAR]
+    USR --> USR_LOGIN[DATOS INICIO SESIÓN] --> USR_GMAIL[CUENTA GOOGLE / MAIL]
+    USR_EDIT --> USR_PASS_ACT[CONTRASEÑA ACTUAL] --> USR_PASS_NEW[NUEVA CONTRASEÑA] --> USR
+
+    CFG --> CFG_THEME[MODO CLARO/OSCURO]
+    CFG --> CFG_NOTIF[NOTIFICACIONES ON/OFF]
+    CFG --> CFG_PERM[PERMISOS APP] --> CFG_OS[CONFIG ANDROID/iOS]
+
+    REGISTRO_VERIF --> POL_SEC[POLÍTICAS SEGURIDAD Y PRIVACIDAD] --> POL_DEC{ACEPTO / DECLINAR}
+    POL_DEC -->|Declinar| ADV_POL["ADVERTENCIA Y RECUPERACIÓN DE DECISIÓN"] --> CONFIRMADO[CONFIRMADO]
+    POL_DEC -->|Acepto| CONFIRMADO
+
+    REGISTRO_VERIF --> NORM[NORMATIVAS VIGENTES] --> NORM_DEC{ACEPTO / DECLINAR}
+    NORM_DEC -->|Declinar| ADV_NORM[ADVERTENCIA: Denegación presencia predios/eventos] --> CONFIRMADO
+    NORM_DEC -->|Acepto| CONFIRMADO
+
+    CONFIRMADO --> KYC_NOM[NOMBRE COMPLETO] --> KYC_DNI[DNI FRENTE/DORSO] --> KYC_CAM1[CÁMARA / CARGAR] --> KYC_VAL1{VÁLIDO / INVÁLIDO}
+    
+    %% RETORNO DE ERROR FOTO DNI
+    KYC_VAL1 -->|Inválido| KYC_RETRY1["INVÁLIDO (REINTENTAR FOTO DNI)"] -.->|Reintentar| KYC_CAM1
+
+    KYC_VAL1 -->|Válido| KYC_DIREC[PAÍS / PROV / CIUDAD / CP / MAIL / TEL] --> KYC_FOTO_FRONT[FOTO FRONTAL] --> KYC_CAM2[CÁMARA / CARGAR] --> KYC_VAL2{VÁLIDO / INVÁLIDO}
+    
+    %% RETORNO DE ERROR FOTO ROSTRO
+    KYC_VAL2 -->|Inválido| KYC_RETRY2["INVÁLIDO (REINTENTAR FOTO ROSTRO)"] -.->|Reintentar| KYC_CAM2
+
+    KYC_VAL2 -->|Válido| ENVIAR_DATOS[ENVIAR DATOS] --> SERVER_ADMIN[SERVIDOR ADMINISTRADOR]
+    SERVER_ADMIN -.-> KYC_STATUS_HUB["HUB DE ESTADO VERIFICACIÓN (Mejora)"] ::: improvedStyle

@@ -1,0 +1,1194 @@
+/* FEELING APP - DESIGN SYSTEM & COLOR PALETTE UPDATE (SCR-201 TO SCR-206) */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Gradiente "Luz del Amanecer" (Luminoso, dorado y radiante) */
+  --bg-gradient-top: #FFB03A;
+  --bg-gradient-bottom: #EE9788;
+  --bg-gradient: linear-gradient(180deg, #FFB03A 0%, #FFA048 30%, #F88B6E 65%, #EE9788 100%);
+  
+  --overlay-color: #FFB03A;
+  --color-orange-active: #FF8A3D;
+  
+  --font-serif: 'IrisUPC', 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  
+  /* Ultra Smooth Apple-style Curve */
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --trans-duration: 0.65s;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #0f1117;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+/* Control Bar for OS Switching */
+.os-control-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 24px;
+  z-index: 200;
+}
+
+.os-control-bar label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-right: 4px;
+}
+
+.os-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.os-btn.active {
+  background: #ffffff;
+  color: #0f1117;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.os-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Devices Showcase Layout */
+.devices-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Device Shell Common Styles */
+.phone-mockup {
+  width: 390px;
+  height: 844px;
+  background: #000000;
+  border-radius: 50px;
+  position: relative;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 0 12px #22252e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+/* Native Mobile Fullscreen Experience (When viewed on actual smartphone) */
+@media (max-width: 600px) {
+  body {
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    background: #FFB03A;
+  }
+  
+  .os-control-bar {
+    display: none !important;
+  }
+
+  .devices-container {
+    padding: 0;
+    gap: 0;
+  }
+
+  .phone-mockup {
+    width: 100vw;
+    height: 100vh;
+    height: -webkit-fill-available;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .phone-mockup.ios-frame:not(:first-child) {
+    display: none !important;
+  }
+
+  .android-punch-hole,
+  .ios-dynamic-island {
+    display: none !important;
+  }
+}
+
+.phone-mockup.hidden {
+  display: none !important;
+}
+
+/* 🤖 ANDROID SPECIFIC MOCKUP STYLES */
+.phone-mockup.android-frame {
+  border-radius: 44px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 0 10px #1e222a;
+}
+
+.android-punch-hole {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 13px;
+  height: 13px;
+  background: #000000;
+  border-radius: 50%;
+  z-index: 100;
+  box-shadow: inset 0 0 2px rgba(255,255,255,0.2);
+}
+
+.android-status-bar {
+  height: 38px;
+  padding: 8px 22px 0 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  z-index: 90;
+}
+
+.android-status-bar .status-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.android-gesture-bar {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 2px;
+  z-index: 100;
+}
+
+/* 🍎 IOS SPECIFIC MOCKUP STYLES */
+.phone-mockup.ios-frame {
+  border-radius: 54px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 0 12px #2b2e3a;
+}
+
+.ios-dynamic-island {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 115px;
+  height: 32px;
+  background: #000000;
+  border-radius: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.ios-dynamic-island .camera-dot {
+  width: 10px;
+  height: 10px;
+  background: #111;
+  border-radius: 50%;
+}
+
+.ios-dynamic-island .sensor-dot {
+  width: 11px;
+  height: 11px;
+  background: #0a0a0a;
+  border-radius: 50%;
+}
+
+.ios-status-bar {
+  height: 48px;
+  padding: 14px 28px 0 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  z-index: 90;
+}
+
+.ios-status-bar .ios-time {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+}
+
+.ios-status-bar .ios-icons {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ios-home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 135px;
+  height: 5px;
+  background: #ffffff;
+  border-radius: 3px;
+  z-index: 100;
+}
+
+/* APP CONTENT SCREEN (INSIDE MOCKUP) */
+.screen-viewport {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  background: var(--bg-gradient);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Floating Glassmorphic Controls */
+.top-header-controls {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 40;
+}
+
+.ios-frame .top-header-controls {
+  top: 22px;
+}
+
+.search-pill-bar {
+  flex: 1;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-pill-bar input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  width: 100%;
+}
+
+.search-pill-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-pill-bar svg {
+  color: #ffffff;
+  opacity: 0.95;
+}
+
+.bell-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollable Content Body */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 95px;
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+}
+
+/* ------------------------------------------------------------- */
+/* HERO CARD (INTRO) WITH #D48D30 OVERLAY */
+/* ------------------------------------------------------------- */
+.hero-card {
+  width: 100%;
+  height: 380px;
+  background-image: url('../FOTOGRAFIAS/INTRO.jpg');
+  background-size: cover;
+  background-position: center;
+  border-bottom-left-radius: 38px;
+  border-bottom-right-radius: 38px;
+  position: relative;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 30px 24px;
+  transition: height var(--trans-duration) var(--ease-smooth),
+              filter var(--trans-duration) var(--ease-smooth),
+              transform var(--trans-duration) var(--ease-smooth);
+  cursor: pointer;
+  overflow: hidden;
+  will-change: height, filter, transform;
+}
+
+/* Photo Overlay matching EJEMPLO DEGRADADO.jpg (Cálido y brillante) */
+.hero-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(226, 133, 43, 0.15) 0%, rgba(226, 133, 43, 0.55) 65%, rgba(210, 110, 30, 0.75) 100%);
+  border-bottom-left-radius: 38px;
+  border-bottom-right-radius: 38px;
+  transition: opacity var(--trans-duration) var(--ease-smooth);
+}
+
+.hero-card-content {
+  position: relative;
+  z-index: 2;
+  transition: transform var(--trans-duration) var(--ease-smooth);
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: 52px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #ffffff;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  transition: font-size var(--trans-duration) var(--ease-smooth),
+              transform var(--trans-duration) var(--ease-smooth);
+}
+
+.hero-body-wrap {
+  opacity: 1;
+  max-height: 150px;
+  transition: opacity 0.4s var(--ease-smooth),
+              max-height var(--trans-duration) var(--ease-smooth),
+              transform var(--trans-duration) var(--ease-smooth);
+  overflow: hidden;
+}
+
+.hero-subtitle {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 18px;
+  line-height: 1.25;
+  max-width: 85%;
+}
+
+.cta-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 24px;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: 25px;
+  color: #ffffff;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+/* INTRO BLURRED / COLLAPSED STATE (Luminoso y brillante) */
+.hero-card.blurred-collapsed {
+  height: 155px;
+  filter: blur(5px) brightness(1.05);
+  -webkit-filter: blur(5px) brightness(1.05);
+  padding: 20px 24px;
+}
+
+.hero-card.blurred-collapsed .hero-body-wrap {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(15px);
+  pointer-events: none;
+}
+
+.hero-card.blurred-collapsed .hero-title {
+  font-size: 38px;
+  transform: translateY(10px);
+}
+
+/* ------------------------------------------------------------- */
+/* VERTICAL DIRECTORY SECTION & ACCORDION SYSTEM */
+/* ------------------------------------------------------------- */
+.directory-section {
+  position: relative;
+  padding: 25px 20px 20px 44px;
+  flex: 1;
+}
+
+.vertical-guide-line {
+  position: absolute;
+  left: 45px;
+  top: 15px;
+  bottom: 30px;
+  width: 1.5px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.directory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ACCORDION CARD COMPONENT */
+.accordion-card {
+  width: 100%;
+  height: 48px;
+  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+  transition: height var(--trans-duration) var(--ease-smooth),
+              box-shadow var(--trans-duration) var(--ease-smooth),
+              margin var(--trans-duration) var(--ease-smooth);
+  cursor: pointer;
+  will-change: height, box-shadow;
+}
+
+.accordion-card.expanded {
+  height: 270px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  margin: 8px 0;
+}
+
+/* Background Photo Layers */
+.card-bg-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity var(--trans-duration) var(--ease-smooth);
+  z-index: 1;
+}
+
+.accordion-card.expanded .card-bg-layer {
+  opacity: 1;
+}
+
+.accordion-card[data-card="voces"] .card-bg-layer {
+  background-image: url('../FOTOGRAFIAS/VOCES.JPG');
+}
+
+.accordion-card[data-card="sustento"] .card-bg-layer {
+  background-image: url('../FOTOGRAFIAS/SUSTENTO.png');
+}
+
+.accordion-card[data-card="lugares"] .card-bg-layer {
+  background-image: url('../FOTOGRAFIAS/LUGARES.jpg');
+}
+
+.accordion-card[data-card="instituciones"] .card-bg-layer {
+  background-image: url('../FOTOGRAFIAS/INSTITUCIONES.png');
+}
+
+/* Overlay gradient using requested #D48D30 color tone */
+.card-overlay-layer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(226, 133, 43, 0.1) 0%, rgba(226, 133, 43, 0.6) 65%, rgba(210, 110, 30, 0.75) 100%);
+  opacity: 0;
+  transition: opacity var(--trans-duration) var(--ease-smooth);
+  z-index: 2;
+}
+
+.accordion-card.expanded .card-overlay-layer {
+  opacity: 1;
+}
+
+/* Inner Layout */
+.card-inner {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 0 0 15px;
+  transition: padding var(--trans-duration) var(--ease-smooth);
+}
+
+.accordion-card.expanded .card-inner {
+  padding: 24px;
+}
+
+.card-header-title {
+  font-family: var(--font-serif);
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: font-size var(--trans-duration) var(--ease-smooth),
+              margin var(--trans-duration) var(--ease-smooth);
+}
+
+.accordion-card.expanded .card-header-title {
+  font-size: 48px;
+  margin-bottom: 6px;
+}
+
+.card-expand-content {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s var(--ease-smooth),
+              max-height var(--trans-duration) var(--ease-smooth),
+              transform var(--trans-duration) var(--ease-smooth);
+  overflow: hidden;
+}
+
+.accordion-card.expanded .card-expand-content {
+  opacity: 1;
+  max-height: 150px;
+  transform: translateY(0);
+}
+
+.card-desc {
+  font-family: var(--font-serif);
+  font-size: 23px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 16px;
+  line-height: 1.25;
+  max-width: 88%;
+}
+
+.card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 24px;
+  background: #ffffff;
+  border-radius: 25px;
+  color: #2c1810;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 19px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  width: fit-content;
+}
+
+/* ------------------------------------------------------------- */
+/* BOTTOM NAVBAR (HIGH CONTRAST & MONOCHROME WHITE + ORANGE ACTIVE) */
+/* ------------------------------------------------------------- */
+.bottom-navbar {
+  position: absolute;
+  bottom: 24px;
+  left: 16px;
+  right: 16px;
+  height: 62px;
+  background: rgba(25, 14, 10, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 31px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+  z-index: 80;
+}
+
+.ios-frame .bottom-navbar {
+  bottom: 28px;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-weight: 500;
+  text-decoration: none;
+  flex: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.nav-item svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.0;
+  stroke: #ffffff; /* Monocromo blanco puro */
+  transition: stroke 0.2s ease, filter 0.2s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Color Naranja cuando está activo */
+.nav-item.active {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.nav-item.active svg {
+  stroke: #FF7043; /* Naranja vibrante de alto contraste */
+  filter: drop-shadow(0 2px 8px rgba(255, 112, 67, 0.7));
+}
+
+.nav-item.active span {
+  color: #FFAB91;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* Central Highlighted Button (NUEVO) - Botón Naranja con Símbolo Blanco */
+.nav-item.nav-central {
+  position: relative;
+  top: -12px;
+}
+
+.nav-item.nav-central .central-badge {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F05A24 0%, #D93800 100%); /* Naranja Vibrante */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 22px rgba(217, 56, 0, 0.6);
+  border: 3px solid rgba(255, 255, 255, 0.85);
+}
+
+.nav-item.nav-central .central-badge img {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) invert(1); /* Símbolo blanco puro */
+}
+
+.nav-item.nav-central span {
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 10px;
+  margin-top: 3px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* ------------------------------------------------------------- */
+/* AGENDA MODULE VIEW (SCR-301 & SCR-302) */
+/* ------------------------------------------------------------- */
+/* ------------------------------------------------------------- */
+/* AGENDA MODULE VIEW (SCR-301 & SCR-302) */
+/* ------------------------------------------------------------- */
+.app-content.agenda-content-view {
+  padding-top: 72px;
+  padding-bottom: 95px;
+  padding-left: 18px;
+  padding-right: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Hidden Utility Class */
+.hidden {
+  display: none !important;
+}
+
+/* Top Sub-Navigation Tabs (Switch Bar) */
+.agenda-top-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  width: 100%;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agenda-tab-btn {
+  padding: 7px 22px;
+  border-radius: 25px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.agenda-tab-btn.active {
+  background: #ffffff;
+  color: #2C1810;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.agenda-tab-btn:not(.active) {
+  background: transparent;
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+}
+
+/* Main White Container Card */
+.agenda-main-card {
+  width: 100%;
+  max-height: calc(100% - 60px);
+  background: #FAF7F5;
+  border-radius: 32px;
+  padding: 16px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.agenda-subview[data-subview="proximamente"] {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-right: 4px;
+  scrollbar-width: none;
+}
+
+.agenda-subview[data-subview="proximamente"]::-webkit-scrollbar {
+  display: none;
+}
+
+/* INDIVIDUAL EVENT CARD IN PROXIMAMENTE FEED */
+.agenda-event-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.agenda-event-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* SUBVIEW 2: CALENDARIO (FIXED FIT - NO SCROLL) */
+.agenda-subview[data-subview="calendario"] {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* PROXIMAMENTE Event Photo Carousel */
+.agenda-photo-box {
+  width: 100%;
+  height: 200px;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.agenda-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  color: #ffffff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease;
+}
+
+.carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.carousel-arrow.prev { left: 8px; }
+.carousel-arrow.next { right: 8px; }
+
+/* Event Info Typography */
+.agenda-event-info {
+  padding: 2px 2px;
+}
+
+.agenda-event-title {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  color: #2C1810;
+  margin-bottom: 2px;
+  line-height: 1.1;
+}
+
+.agenda-event-subtitle {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: #D95D39;
+  margin-bottom: 8px;
+}
+
+.agenda-event-desc {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 1.3;
+  color: #4A3E39;
+  margin-bottom: 8px;
+}
+
+.agenda-event-link {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  color: #7A6960;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* CALENDARIO VIEW (SCR-302 - COMPACT FIT) */
+.cal-header-selectors {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 8px;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  color: #2C1810;
+  font-weight: 600;
+}
+
+.cal-sel-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cal-sel-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #2C1810;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.cal-grid-table {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.cal-day-head {
+  font-weight: 600;
+  color: #555;
+  padding-bottom: 4px;
+  font-size: 12px;
+}
+
+.cal-day-head.weekend {
+  color: #D95D39;
+}
+
+.cal-day-cell {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #333;
+}
+
+.cal-day-cell.prev-month, .cal-day-cell.next-month {
+  color: #B0BEC5;
+}
+
+.cal-day-cell.weekend-day {
+  color: #D95D39;
+}
+
+/* Event Highlight Range (21 to 27 in vivid blue) */
+.cal-day-cell.event-highlight {
+  background: #3B82F6;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.cal-day-cell.event-highlight.event-start {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.cal-day-cell.event-highlight.event-end {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Action Buttons Flexbox (Present in both views) */
+.agenda-actions-flex {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.agenda-action-btn {
+  flex: 1;
+  padding: 9px 12px;
+  background: #D48D30;
+  border: none;
+  border-radius: 25px;
+  color: #ffffff;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(212, 141, 48, 0.3);
+  transition: transform 0.2s ease, filter 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.agenda-action-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+/* ------------------------------------------------------------- */
+/* INTERACTIVE MODALS (AGENDAR & RSVP TICKET) */
+/* ------------------------------------------------------------- */
+.app-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.app-modal-card {
+  width: 100%;
+  max-width: 360px;
+  background: #FFFFFF;
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.modal-header h3 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  color: #2C1810;
+}
+
+.modal-body-text {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.modal-options {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.modal-option-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 20px;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.modal-option-btn.primary-opt {
+  background: #D48D30;
+  color: #ffffff;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+}
+
+/* Ticket RSVP Styling */
+.ticket-card {
+  background: linear-gradient(180deg, #FAF7F5 0%, #FFFFFF 100%);
+  border: 2px dashed #D48D30;
+}
+
+.ticket-badge {
+  background: #4CAF50;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.ticket-header h2 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  color: #2C1810;
+  margin-bottom: 4px;
+}
+
+.ticket-date {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #D95D39;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.ticket-qr-wrap {
+  margin-bottom: 16px;
+}
+
+.ticket-info-grid {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(212, 141, 48, 0.08);
+  border-radius: 16px;
+  margin-bottom: 18px;
+}
+
+.ticket-info-grid div {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-lbl {
+  font-size: 11px;
+  color: #888;
+  font-family: var(--font-sans);
+}
+
+.info-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2C1810;
+  font-family: var(--font-sans);
+}
