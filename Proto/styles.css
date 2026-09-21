@@ -1,6 +1,4 @@
-/* FEELING APP - DESIGN SYSTEM & COLOR PALETTE UPDATE (SCR-201 TO SCR-206) */
-
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Gradiente "Luz del Amanecer" (Luminoso, dorado y radiante) */
@@ -11,8 +9,8 @@
   --overlay-color: #FFB03A;
   --color-orange-active: #FF8A3D;
   
-  --font-serif: 'IrisUPC', 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-serif: 'Cormorant Garamond', 'Cinzel', 'IrisUPC', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   
   /* Ultra Smooth Apple-style Curve */
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);

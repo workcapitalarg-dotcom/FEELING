@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------------------------------------------------
-  // 1. OS DEVICE VIEW SWITCHER (Ambos / Android / iOS)
+  // 1. AUTOMATIC SMART OS & MOBILE DETECTION
   // -------------------------------------------------------------
   const btnBoth = document.getElementById('btn-both');
   const btnAndroid = document.getElementById('btn-android');
@@ -20,6 +20,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function setActiveBtn(activeBtn) {
     allBtns.forEach(btn => btn?.classList.remove('active'));
     activeBtn?.classList.add('active');
+  }
+
+  // Automatic Mobile / OS Detection
+  const isMobile = window.innerWidth <= 600 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  if (isMobile) {
+    if (isApple) {
+      mockupAndroid?.classList.add('hidden');
+      mockupIos?.classList.remove('hidden');
+    } else {
+      mockupAndroid?.classList.remove('hidden');
+      mockupIos?.classList.add('hidden');
+    }
   }
 
   if (btnBoth) {
