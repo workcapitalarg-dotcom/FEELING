@@ -115,10 +115,12 @@ body {
 /* Native Mobile Fullscreen Experience (When viewed on actual smartphone) */
 @media (max-width: 600px) {
   body {
-    padding: 0;
-    margin: 0;
+    padding: 0 !important;
+    margin: 0 !important;
     overflow-x: hidden;
-    background: #FFB03A;
+    background: #FFB03A !important;
+    width: 100vw;
+    height: 100vh;
   }
   
   .os-control-bar {
@@ -126,25 +128,50 @@ body {
   }
 
   .devices-container {
-    padding: 0;
-    gap: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
   }
 
   .phone-mockup {
-    width: 100vw;
-    height: 100vh;
-    height: -webkit-fill-available;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+    border: none !important;
   }
 
-  .phone-mockup.ios-frame:not(:first-child) {
+  /* Only display the first mockup frame on mobile */
+  .phone-mockup.ios-frame {
     display: none !important;
   }
 
   .android-punch-hole,
-  .ios-dynamic-island {
+  .android-status-bar,
+  .android-gesture-bar,
+  .ios-dynamic-island,
+  .ios-status-bar,
+  .ios-home-indicator {
     display: none !important;
+  }
+
+  .screen-viewport {
+    border-radius: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .top-header-controls {
+    top: 12px !important;
+  }
+
+  .app-content.agenda-content-view {
+    padding-top: 65px !important;
+    padding-bottom: 85px !important;
   }
 }
 
