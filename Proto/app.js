@@ -6,61 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------------------------------------------------
-  // 1. AUTOMATIC SMART OS & MOBILE DETECTION
-  // -------------------------------------------------------------
-  const btnBoth = document.getElementById('btn-both');
-  const btnAndroid = document.getElementById('btn-android');
-  const btnIos = document.getElementById('btn-ios');
-
-  const mockupAndroid = document.getElementById('mockup-android');
-  const mockupIos = document.getElementById('mockup-ios');
-
-  const allBtns = [btnBoth, btnAndroid, btnIos];
-
-  function setActiveBtn(activeBtn) {
-    allBtns.forEach(btn => btn?.classList.remove('active'));
-    activeBtn?.classList.add('active');
-  }
-
-  // Automatic Mobile / OS Detection
-  const isMobile = window.innerWidth <= 600 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-  if (isMobile) {
-    if (isApple) {
-      mockupAndroid?.classList.add('hidden');
-      mockupIos?.classList.remove('hidden');
-    } else {
-      mockupAndroid?.classList.remove('hidden');
-      mockupIos?.classList.add('hidden');
-    }
-  }
-
-  if (btnBoth) {
-    btnBoth.addEventListener('click', () => {
-      setActiveBtn(btnBoth);
-      mockupAndroid?.classList.remove('hidden');
-      mockupIos?.classList.remove('hidden');
-    });
-  }
-
-  if (btnAndroid) {
-    btnAndroid.addEventListener('click', () => {
-      setActiveBtn(btnAndroid);
-      mockupAndroid?.classList.remove('hidden');
-      mockupIos?.classList.add('hidden');
-    });
-  }
-
-  if (btnIos) {
-    btnIos.addEventListener('click', () => {
-      setActiveBtn(btnIos);
-      mockupAndroid?.classList.add('hidden');
-      mockupIos?.classList.remove('hidden');
-    });
-  }
-
-  // -------------------------------------------------------------
   // 2. ACCORDION CONTROLLER FOR HOME DISCOVERY CARDS
   // -------------------------------------------------------------
   const accordionCards = document.querySelectorAll('.accordion-card');
